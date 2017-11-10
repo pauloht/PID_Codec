@@ -41,6 +41,12 @@ public class Imagem {
         }
     }
     
+    public void setPixels(byte[] byteArray){
+        for (int i=0;i<this.pixel.size();i++){
+            this.pixel.get(i).setCor(byteArray[i*3], byteArray[i*3+1], byteArray[i*3+2]);
+        }
+    }
+    
     public Imagem(File file){
         pixel = new ArrayList<>();
         try{
@@ -81,7 +87,7 @@ public class Imagem {
             e.printStackTrace();
         }
     }
-
+    
     public int getWidth() {
         return width;
     }

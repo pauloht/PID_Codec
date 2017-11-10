@@ -27,6 +27,10 @@ public class PTimer {
         endTime = System.nanoTime();
     }
     
+    public long getElapsed(){
+        return(endTime-startTime);
+    }
+    
     @Override
     public String toString(){
         if (timerOk){

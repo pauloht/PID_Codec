@@ -254,21 +254,42 @@ public class CarregarView extends javax.swing.JFrame {
                 ActionListener listener = new ActionListener(){
                     @Override
                     public void actionPerformed(ActionEvent event){
-                        System.out.println("next frame!");
-                        vr.nextFrame();
+                        //System.out.println("next frame!");
+                        PTimer tempo = new PTimer("tempo exibicao");
+                        tempo.startTimer();
+                        Timer t = (Timer)event.getSource();
+                        boolean ret = vr.nextFrame();
+                        tempo.endTimer();
+                        long elapsed = tempo.getElapsed();
+                        if (elapsed > 33333333){
+                            t.restart();
+                            System.out.println("estouro");
+                        }else{
+                            int delay = (int) (33333333-elapsed);
+                            t.setDelay(delay);
+                        }
+                        if (!ret){
+                            System.out.println("frame atrasado");
+                            t.restart();
+                        }else{
+                            System.out.println("frame em tempo");
+                        }
                         if (vr.hasVideoEnded()){
-                            if (event.getSource() instanceof Timer){
+                            if (true){
                                 ((Timer)event.getSource()).stop();
                             }else{
                                 System.out.println(evt.getSource().getClass().getSimpleName());
                             }
                         }
+                        //System.out.println("tempo :  " + tempo);
                     }
                 };
                 
                 timer = new Timer(33, listener);
                 timer.setRepeats(true);
                 timer.start();
+                
+                
                 /*
                 JFrame frame = new JFrame();
                 imagemPanel imgP = new imagemPanel(file);

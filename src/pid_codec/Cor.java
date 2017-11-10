@@ -22,6 +22,12 @@ public class Cor {
         blue = b;
     }
     
+    public void setCor(byte red,byte green,byte blue){
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
+    }
+    
     public byte[] getBytes(){
         byte[] ret = new byte[3];
         ret[0] = red;
