@@ -11,6 +11,7 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 /**
  *
@@ -18,7 +19,6 @@ import java.util.List;
  */
 public class imagemPanel extends javax.swing.JPanel {
     private BufferedImage buffer = null;
-    private Imagem bufferedImagem= null;
     /**
      * Creates new form imagemPanel
      */
@@ -45,10 +45,9 @@ public class imagemPanel extends javax.swing.JPanel {
     
     public void changeImage(File file){
        try{
-            Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
             Imagem img = new Imagem(file);
-            bufferedImagem = img;
-            List< Cor > pixels = img.getPixel();
+            Cor[] pixels = img.getPixel();
+            
             int imagemWidth = img.getWidth();
             int imagemHeight = img.getHeight();
             int quantiaPixels = imagemWidth*imagemHeight;
@@ -56,23 +55,14 @@ public class imagemPanel extends javax.swing.JPanel {
 
             BufferedImage quadro = new BufferedImage(imagemWidth,imagemHeight,BufferedImage.TYPE_INT_ARGB);
             buffer = quadro;
+            
 
-            for (int i=0;i<imagemHeight;i++)
-            {
-                int i2 = imagemHeight-i-1;
-                for (int j=0;j<imagemWidth;j++){
-                    int corPreencher = Color.OPAQUE;
-                    if (!(pixels==null)){
-                        if (i<imagemHeight && j<imagemWidth){
-                            int pos = i2*imagemWidth + j;
-                            Cor corRelativa = pixels.get(pos);
-                            Color corNoPixel = corRelativa.getValorCor();
-                            corPreencher = corNoPixel.getRGB();
-                        }
+            for (int i=0;i<imagemHeight;i++){
+                    for (int j=0;j<imagemWidth;j++){
+                        Cor c = pixels[(imagemHeight-i-1)*imagemWidth+j];
+                        quadro.setRGB(j, i, c.getValorInt());
                     }
-                    quadro.setRGB(j, i, corPreencher);
                 }
-            }
             this.setPreferredSize(new Dimension(buffer.getWidth(),buffer.getHeight()));
             this.setSize(this.getPreferredSize());
             this.repaint();
@@ -84,39 +74,56 @@ public class imagemPanel extends javax.swing.JPanel {
     }
     
     public void changeImage(Imagem img){
+            PTimer inicio = new PTimer("changeImage tempo");
+            inicio.startTimer();
             try{
-            bufferedImagem = img;
-            List< Cor > pixels = img.getPixel();
-            int imagemWidth = img.getWidth();
-            int imagemHeight = img.getHeight();
+                Cor[] pixels = img.getPixel();
 
-            BufferedImage quadro = new BufferedImage(imagemWidth,imagemHeight,BufferedImage.TYPE_INT_ARGB);
-            buffer = quadro;
+                int imagemWidth = img.getWidth();
+                int imagemHeight = img.getHeight();
 
-            for (int i=0;i<imagemHeight;i++)
-            {
-                int i2 = imagemHeight-i-1;
-                for (int j=0;j<imagemWidth;j++){
-                    int corPreencher = Color.OPAQUE;
-                    if (!(pixels==null)){
-                        if (i<imagemHeight && j<imagemWidth){
-                            int pos = i2*imagemWidth + j;
-                            Cor corRelativa = pixels.get(pos);
-                            Color corNoPixel = corRelativa.getValorCor();
-                            corPreencher = corNoPixel.getRGB();
-                        }
-                    }
-                    quadro.setRGB(j, i, corPreencher);
+                if (buffer==null){
+                    buffer = new BufferedImage(imagemWidth,imagemHeight,BufferedImage.TYPE_INT_ARGB);
                 }
+
+                /*
+                for (int i=0;i<imagemHeight;i++)
+                {
+                    int i2 = imagemHeight-i-1;
+                    for (int j=0;j<imagemWidth;j++){
+                        int corPreencher = Color.OPAQUE;
+                        if (!(pixels==null)){
+                            if (i<imagemHeight && j<imagemWidth){
+                                int pos = i2*imagemWidth + j;
+                                Cor corRelativa = pixels[pos];
+                                Color corNoPixel = corRelativa.getValorCor();
+                                corPreencher = corNoPixel.getRGB();
+                            }
+                        }
+                        quadro.setRGB(j, i, corPreencher);
+                    }
+                }
+                */
+                
+                for (int i=0;i<imagemHeight;i++){
+                    for (int j=0;j<imagemWidth;j++){
+                        Cor c = pixels[(imagemHeight-i-1)*imagemWidth+j];
+                        buffer.setRGB(j, i, c.getValorInt());
+                    }
+                }
+                
+                
+                this.setPreferredSize(new Dimension(buffer.getWidth(),buffer.getHeight()));
+                this.setSize(this.getPreferredSize());
+                this.repaint();
             }
-            this.setPreferredSize(new Dimension(buffer.getWidth(),buffer.getHeight()));
-            this.setSize(this.getPreferredSize());
-            this.repaint();
-        }
-        catch(Exception e){
-            System.out.println("Erro imagemPanel");
-            e.printStackTrace();
-        } 
+            catch(Exception e){
+                System.out.println("Erro imagemPanel");
+                e.printStackTrace();
+            }finally{
+                inicio.endTimer();
+                System.out.println(inicio);
+            }
     }
     
     @Override
@@ -126,10 +133,6 @@ public class imagemPanel extends javax.swing.JPanel {
             //System.out.println("DRAWING");
             g.drawImage(buffer, 0, 0, this);
         }
-    }
-    
-    public Imagem getImagem(){
-        return(bufferedImagem);
     }
 
     /**

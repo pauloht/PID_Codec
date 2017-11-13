@@ -15,15 +15,36 @@ import javax.swing.JPanel;
  * @author FREE
  */
 public class testJFrameJpanel {
+    public static int testRGB(byte r,byte g,byte b){
+        int ret = ((255 & 0xFF) << 24) |
+                ((r & 0xFF) << 16) |
+                ((g & 0xFF) << 8)  |
+                ((b & 0xFF) << 0);
+        return(ret);
+    }
+    
+    public static byte getBit(byte ID,int position)
+    {
+        return (byte)((ID >> position) & 1);
+    }
+    
     public static void main(String args[]){
-        JFrame frame = new JFrame();
-        frame.setVisible(true);
+        byte a = 0;
         
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.GREEN);
-        panel.setPreferredSize(new Dimension(200,200));
+        a = (byte) (a | (1 << 6));
+        a = (byte) (a | (1 << 5));
+        a = (byte) (a | (1 << 4));
+        a = (byte) (a | (1 << 3));
+        a = (byte) (a | (1 << 1));
         
-        frame.add(panel);
-        frame.pack();
+        for (int i=0;i<8;i++){
+            byte b = getBit(a,i);
+            System.out.println(b);
+        }
+        //a = (byte) (a & ~(1 << 5));
+        
+        String t = Byte.toString(a);
+        String s1 = String.format("%8s", Integer.toBinaryString(a & 0xFF)).replace(' ', '0');
+        System.out.println(s1);
     }
 }

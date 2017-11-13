@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -34,6 +35,9 @@ public class CarregarView extends javax.swing.JFrame {
     private String decodedPath;
     private static JFileChooser fcBuffer = null;
     private File fileBuffer = null;
+    
+    private ArrayList<Long> historicoDeTempos = new ArrayList<>();
+    private long[] tempos = new long[2];
     /**
      * Creates new form CarregarView
      */
@@ -250,7 +254,7 @@ public class CarregarView extends javax.swing.JFrame {
                 int contador = 0;
                 
                 Timer timer;
-                
+                tempos[0] = System.nanoTime();
                 ActionListener listener = new ActionListener(){
                     @Override
                     public void actionPerformed(ActionEvent event){
@@ -261,25 +265,24 @@ public class CarregarView extends javax.swing.JFrame {
                         boolean ret = vr.nextFrame();
                         tempo.endTimer();
                         long elapsed = tempo.getElapsed();
-                        if (elapsed > 33333333){
-                            t.restart();
-                            System.out.println("estouro");
-                        }else{
-                            int delay = (int) (33333333-elapsed);
-                            t.setDelay(delay);
+                        if (ret){
+                            historicoDeTempos.add(elapsed);
                         }
-                        if (!ret){
-                            System.out.println("frame atrasado");
+                        if (!ret  || elapsed > 33333333){
                             t.restart();
+                            //System.out.println("estouro");
                         }else{
-                            System.out.println("frame em tempo");
+                            t.restart();
+                            //int delay = (int) ((33333333-elapsed)/1E6);
+                            //t.setDelay(delay);
                         }
                         if (vr.hasVideoEnded()){
-                            if (true){
-                                ((Timer)event.getSource()).stop();
-                            }else{
-                                System.out.println(evt.getSource().getClass().getSimpleName());
+                            tempos[1] = System.nanoTime();
+                            for (Long l : historicoDeTempos){
+                                System.out.println("Tempo : " + (l/1E9+0.00) + "s");
                             }
+                            System.out.println("Tempo total : " + ((tempos[1]-tempos[0])/(1E9+0.00)));
+                            ((Timer)event.getSource()).stop();
                         }
                         //System.out.println("tempo :  " + tempo);
                     }

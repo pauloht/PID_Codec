@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 public class VideoReader {
     private FileInputStream file;
     private int frameIndex = -1;
+    private int frameDeLeitura = -1;
     private int lastFrame = 0;
     private boolean firstFrame = true;
     private int width = -1;
@@ -28,11 +29,11 @@ public class VideoReader {
     private JFrame frame;
     private imagemPanel imgP = new imagemPanel(null);
     private Imagem[] bufferDeImages = new Imagem[10];
-    private boolean[] flagBuffer = new boolean[10];
-    private boolean videoEnded = false;
+    private volatile boolean[] flagBuffer = new boolean[10];
     private int posEscrevendo = 0;
     private int posLendo = 0;
     private Imagem imgBuffer = null;
+    byte[] bytesArrayInicial = null;
     byte[] bytesArray = null;
     
     public VideoReader(File hueFile){
@@ -61,8 +62,8 @@ public class VideoReader {
     }
     
     public Imagem carregarImagem(){
-        PTimer pt = new PTimer("Tempo de carregar imagem");
-        pt.startTimer();
+        //PTimer pt = new PTimer("Tempo de carregar imagem");
+        //pt.startTimer();
         if (firstFrame){
             byte[] intArray = new byte[4];
             try {
@@ -72,7 +73,8 @@ public class VideoReader {
                 width = ByteBuffer.wrap(intArray).getInt();
                 file.read(intArray);
                 height = ByteBuffer.wrap(intArray).getInt(); 
-                bytesArray = new byte[(width*height)*3];
+                bytesArrayInicial = new byte[(width*height)*3];
+                bytesArray = new byte[width*height];
                 System.out.println("lastFrame : " + lastFrame + ",width : " + width + ",height : " + height);
             } catch (IOException ex) {
                 Logger.getLogger(VideoReader.class.getName()).log(Level.SEVERE, null, ex);
@@ -81,31 +83,44 @@ public class VideoReader {
         }
         if (frameIndex < lastFrame){
             try {
-                PTimer t1 = new PTimer("Tempo de ler bytes do disco");
-                t1.startTimer();
-                file.read(bytesArray);
-                t1.endTimer();
-                System.out.println(t1);
+                //PTimer t1 = new PTimer("Tempo de ler bytes do disco");
+                //t1.startTimer();
+                //t1.endTimer();
                 frameIndex++;
-                PTimer t2 = new PTimer("Tempo de proc");
-                t2.startTimer();
+                //PTimer t2 = new PTimer("Tempo de proc");
+                //t2.startTimer();
                 //
                 if (imgBuffer==null){
-                    imgBuffer = new Imagem(bytesArray,width,height);
+                    file.read(bytesArrayInicial);
+                    imgBuffer = new Imagem(bytesArrayInicial,width,height);
                 }else{
-                    imgBuffer.setPixels(bytesArray);
+                    file.read(bytesArray);
+                    //imgBuffer.setPixels(bytesArray); otimizar depois
+                    imgBuffer = new Imagem(imgBuffer,???/)
                 }
-                t2.endTimer();
-                System.out.println(t2);
-                pt.endTimer();
-                System.out.println(pt);
+                //t2.endTimer();
+                //pt.endTimer();
+                
+                //
+                //long tempoTotal = pt.getElapsed();
+                //long tempDisco = t1.getElapsed();
+                //long tempProc = t2.getElapsed();
+                
+                //double pDisco = (tempDisco+0.0)/(tempoTotal+0.0)*100.00;
+                //double pProc = (tempProc+0.0)/(tempoTotal+0.0)*100.00;
+                
+                //System.out.println("tempo total : " + (tempoTotal/1E9) + " seg");
+                //System.out.println("percentage disco : " + pDisco);
+                //System.out.println("percentage procc : " + pProc);
+                
+                //
                 return(this.imgBuffer);
             } catch (IOException ex) {
                 Logger.getLogger(VideoReader.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        pt.endTimer();
-        System.out.println(pt);
+        //pt.endTimer();
+        //System.out.println(pt);
         return(null);
     }
     
@@ -128,10 +143,9 @@ public class VideoReader {
                 }
             }else{
                 //faz nada
-                System.out.println("produtor parado em pos " + posEscrevendo);
+                //System.out.println("produtor parado em pos " + posEscrevendo);
             }
         }
-        videoEnded = true;
         }catch(Exception e){
             e.printStackTrace();
             System.out.println("Erro thread");
@@ -142,9 +156,14 @@ public class VideoReader {
     }
     
     public boolean nextFrame(){
+        if (frameDeLeitura>=60){
+            System.out.println("ultimo frame!");
+            return(true);
+        }
         frame.pack();
         if (file!=null){
             if (flagBuffer[posLendo]==true){
+                frameDeLeitura++;
                 Imagem imgLocal = bufferDeImages[posLendo];
                 imgP.changeImage(imgLocal);
                 flagBuffer[posLendo] = false;
@@ -157,12 +176,12 @@ public class VideoReader {
                 return(true);
             }
         }
-        System.out.println("Consumidor parado em " + posLendo);
+        //System.out.println("Consumidor parado em " + posLendo);
         return(false);
     }
 
     public boolean hasVideoEnded() {
-        return videoEnded;
+        return (frameDeLeitura>=60);
     }
     
     

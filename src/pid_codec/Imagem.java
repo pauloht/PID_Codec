@@ -22,33 +22,109 @@ public class Imagem {
     
     private int height;
     
-    private ArrayList<Cor> pixel;
+    //private ArrayList<Cor> pixel;
+    private Cor[] pixel;
 
+    /* 
     public ArrayList<Cor> getPixel() {
         return pixel;
     }
+    */
+    
+    public Cor[] getPixel() {
+        return(pixel);
+    }
 
+    /*
     public void setPixel(ArrayList<Cor> pixel) {
         this.pixel = pixel;
     }
+    */
+    
+    
     
     public Imagem(byte[] byteArray,int width,int height){
-        pixel = new ArrayList<>();
+        //pixel = new ArrayList<>();
+        pixel = new Cor[width*height];
         this.width = width;
         this.height = height;
+        
+        /*
         for (int i=0;i<byteArray.length;i=i+3){
             this.pixel.add(new Cor(byteArray[i],byteArray[i+1],byteArray[i+2]));
+        }
+        */
+        for (int i=0;i<width*height;i++){
+            pixel[i] = new Cor(byteArray[i*3],byteArray[i*3+1],byteArray[i*3+2]);
+        }
+    }
+    
+    public Imagem(Imagem imgAnterior,ImagemComprimida imgComp){
+        this.pixel = new Cor[imgAnterior.pixel.length];
+        this.width = imgAnterior.width;
+        this.height = imgAnterior.height;
+        
+        for (int i=0;i<imgAnterior.pixel.length;i++){
+            byte red = 0;
+            byte green = 0;
+            byte blue = 0;
+            Cor pixel = imgAnterior.pixel[i];
+            
+            byte variacao = imgComp.getBytes()[i];
+            
+            byte variacaoRed = (byte)((variacao >> 4) & 1);
+            if (variacaoRed>0){
+                byte sinal = (byte)((variacao >> 5) & 1);
+                if (sinal>0){
+                   red = (byte)(pixel.getRed() - 16);
+                }else{
+                   red = (byte)(pixel.getRed() + 16);
+                }
+            }else{
+                red = pixel.getRed();
+            }
+            
+            byte variacaoGreen = (byte)((variacao >> 2) & 1);
+            if (variacaoGreen>0){
+                byte sinal = (byte)((variacao >> 3) & 1);
+                if (sinal>0){
+                   green = (byte)(pixel.getGreen() - 16);
+                }else{
+                   green = (byte)(pixel.getGreen() + 16);
+                }
+            }else{
+                green = pixel.getGreen();
+            }
+            
+            byte variacaoBlue = (byte)((variacao >> 0) & 1);
+            if (variacaoBlue>0){
+                byte sinal = (byte)((variacao >> 1) & 1);
+                if (sinal>0){
+                   blue = (byte)(pixel.getBlue() - 16);
+                }else{
+                   blue = (byte)(pixel.getBlue() + 16);
+                }
+            }else{
+                blue = pixel.getBlue();
+            }
+            
+            this.pixel[i] = new Cor(red,green,blue);
         }
     }
     
     public void setPixels(byte[] byteArray){
+        /*
         for (int i=0;i<this.pixel.size();i++){
             this.pixel.get(i).setCor(byteArray[i*3], byteArray[i*3+1], byteArray[i*3+2]);
+        }
+        */
+        for (int i=0;i<pixel.length;i++){
+            pixel[i].setCor(byteArray[i*3], byteArray[i*3+1], byteArray[i*3+2]);
         }
     }
     
     public Imagem(File file){
-        pixel = new ArrayList<>();
+        //pixel = new ArrayList<>();
         try{
             FileInputStream fis = new FileInputStream(file);
             byte[] intBuffer = new byte[4];
@@ -72,6 +148,7 @@ public class Imagem {
             byte red;
             byte green;
             byte blue;
+            pixel = new Cor[width*height];
             for (int i=0;i<height;i++){
                 fis.read(linhaBuffer);
                 for (int j=0;j<width;j++){
@@ -80,7 +157,8 @@ public class Imagem {
                    red = linhaBuffer[j*3+2];
                    //System.out.println("adicionando = " + (red&0xff) + "," + (green&0xff) + "," + (blue&0xff));
                    Cor cor = new Cor(red,green,blue);
-                   pixel.add(cor);
+                   //pixel.add(cor);
+                   pixel[i*width+j] = cor;
                 }
             }
         }catch(Exception e){
@@ -105,7 +183,8 @@ public class Imagem {
     }
     
     public byte[] getBytes(){
-        byte[] retorno = new byte[pixel.size()*3];
+        //byte[] retorno = new byte[pixel.size()*3];
+        byte[] retorno = new byte[pixel.length*3];
         int count = 0;
         for (Cor cor : pixel){
             System.arraycopy(cor.getBytes(), 0, retorno, count*3, 3);
@@ -113,4 +192,6 @@ public class Imagem {
         }
         return(retorno);
     }
+    
+
 }

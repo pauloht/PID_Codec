@@ -36,6 +36,7 @@ public class Cor {
         return(ret);
     }
  
+    /*
     public Color getValorCor(){
         try{
             Color retorno = new Color(red&0xff,green&0xff,blue&0xff);
@@ -46,6 +47,28 @@ public class Cor {
         }
         return(null);
     }
+    */
+    
+    public int getValorInt(){
+        return ( ((255 & 0xFF) << 24) |
+                ((red & 0xFF) << 16) |
+                ((green & 0xFF) << 8)  |
+                ((blue & 0xFF) << 0) );
+    }
+
+    public byte getRed() {
+        return red;
+    }
+
+    public byte getGreen() {
+        return green;
+    }
+
+    public byte getBlue() {
+        return blue;
+    }
+    
+    
     
     @Override
     public String toString(){

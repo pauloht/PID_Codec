@@ -43,13 +43,16 @@ public class VideoWriter {
             out.write(cabecalho);
             out.write(imagemInicial.getBytes());
             ptstart.endTimer();
+            Imagem imagemBuffer = imagemInicial;
             System.out.println(ptstart);
             for (int i=1;i<=ultimoID;i++){
                 PTimer ptloop= new PTimer("frame "+Integer.toString(i));
                 ptloop.startTimer();
                 File file = new File( (diretorio.getPath()+"//"+baseNome+util.retornarStringPorNumero(i)+extensao) );
                 Imagem img = new Imagem(file);
-                out.write(img.getBytes());
+                ImagemComprimida imgComp = ImagemComprimida.difImagem(imagemBuffer, img);
+                imagemBuffer = img;
+                out.write(imgComp.getBytes());
                 ptloop.endTimer();
                 System.out.println(ptloop);
             }
