@@ -33,8 +33,9 @@ public class VideoReader {
     private int posEscrevendo = 0;
     private int posLendo = 0;
     private Imagem imgBuffer = null;
+    private Imagem img;
     byte[] bytesArrayInicial = null;
-    byte[] bytesArray = null;
+    byte[] bytesArrayDiff = null;
     
     public VideoReader(File hueFile){
         try {
@@ -74,7 +75,7 @@ public class VideoReader {
                 file.read(intArray);
                 height = ByteBuffer.wrap(intArray).getInt(); 
                 bytesArrayInicial = new byte[(width*height)*3];
-                bytesArray = new byte[width*height];
+                bytesArrayDiff = new byte[(width*height)*4];
                 System.out.println("lastFrame : " + lastFrame + ",width : " + width + ",height : " + height);
             } catch (IOException ex) {
                 Logger.getLogger(VideoReader.class.getName()).log(Level.SEVERE, null, ex);
@@ -90,13 +91,15 @@ public class VideoReader {
                 //PTimer t2 = new PTimer("Tempo de proc");
                 //t2.startTimer();
                 //
-                if (imgBuffer==null){
+                if (img==null){
                     file.read(bytesArrayInicial);
-                    imgBuffer = new Imagem(bytesArrayInicial,width,height);
+                    img = new Imagem(bytesArrayInicial,width,height);
+                    imgBuffer = new Imagem(img);
                 }else{
-                    file.read(bytesArray);
-                    //imgBuffer.setPixels(bytesArray); otimizar depois
-                    imgBuffer = new Imagem(imgBuffer,???/)
+                    file.read(bytesArrayDiff);
+                    //System.out.println(imgBuffer.getSize() + " = " + (bytesArrayDiff.length/4));
+                    img.setPixels(imgBuffer,bytesArrayDiff);
+                    imgBuffer = new Imagem(img);
                 }
                 //t2.endTimer();
                 //pt.endTimer();
@@ -114,7 +117,7 @@ public class VideoReader {
                 //System.out.println("percentage procc : " + pProc);
                 
                 //
-                return(this.imgBuffer);
+                return(this.img);
             } catch (IOException ex) {
                 Logger.getLogger(VideoReader.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -156,7 +159,7 @@ public class VideoReader {
     }
     
     public boolean nextFrame(){
-        if (frameDeLeitura>=60){
+        if (frameDeLeitura>=lastFrame){
             System.out.println("ultimo frame!");
             return(true);
         }
@@ -181,7 +184,7 @@ public class VideoReader {
     }
 
     public boolean hasVideoEnded() {
-        return (frameDeLeitura>=60);
+        return (frameDeLeitura>=lastFrame);
     }
     
     

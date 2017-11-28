@@ -27,10 +27,12 @@ public class VideoWriter {
             System.out.println("write start");
             out = new FileOutputStream(nameOut);
             File fileImagemInicial = new File((diretorio.getPath()+"//"+baseNome+util.retornarStringPorNumero(0)+extensao));
-            Imagem imagemInicial = new Imagem(fileImagemInicial);
+            Imagem imagemInicial = new Imagem(fileImagemInicial,false);
             int width = imagemInicial.getWidth();
             int height = imagemInicial.getHeight();
             
+            PTimer t2 = new PTimer("tempo total");
+            t2.startTimer();
             PTimer ptstart = new PTimer("primeiroFrame");
             ptstart.startTimer();
             byte[] cabecalho = new byte[12];
@@ -42,20 +44,28 @@ public class VideoWriter {
             System.arraycopy(heightBytes, 0, cabecalho, 8, 4);
             out.write(cabecalho);
             out.write(imagemInicial.getBytes());
+            System.out.println(imagemInicial.testPrint());
+            Imagem imagemBuffer = null;
             ptstart.endTimer();
-            Imagem imagemBuffer = imagemInicial;
+            byte[] aux;
             System.out.println(ptstart);
             for (int i=1;i<=ultimoID;i++){
                 PTimer ptloop= new PTimer("frame "+Integer.toString(i));
                 ptloop.startTimer();
                 File file = new File( (diretorio.getPath()+"//"+baseNome+util.retornarStringPorNumero(i)+extensao) );
-                Imagem img = new Imagem(file);
-                ImagemComprimida imgComp = ImagemComprimida.difImagem(imagemBuffer, img);
-                imagemBuffer = img;
-                out.write(imgComp.getBytes());
+                //Imagem img = new Imagem(file);
+                //out.write(img.getBytes());
+                imagemBuffer = new Imagem(imagemInicial);
+                imagemInicial.setImagem(file,false);
+                aux = Imagem.diffImagem(imagemBuffer, imagemInicial);
+                System.out.println(imagemInicial.testPrint());
+                System.out.println("dif : " + Imagem.getInterpretacaoDiferanca(aux));
+                out.write(aux);
                 ptloop.endTimer();
-                System.out.println(ptloop);
+                //System.out.println(ptloop);
             }
+            t2.endTimer();
+            System.out.println(t2);
             out.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(VideoWriter.class.getName()).log(Level.SEVERE, null, ex);

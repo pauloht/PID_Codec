@@ -13,17 +13,19 @@ public class PTimer {
     private String name = "nil";
     private long startTime = 0;
     private long endTime = 0;
-    private boolean timerOk = false;
+    private boolean timerOk = true;
     
     public PTimer(String name){
         this.name = name;
     }
     
     public void startTimer(){
+        timerOk = true;
         startTime = System.nanoTime();
     }
     
     public void endTimer(){
+        timerOk = false;
         endTime = System.nanoTime();
     }
     

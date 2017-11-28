@@ -6,23 +6,15 @@ package pid_codec;
  * and open the template in the editor.
  */
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -221,6 +213,7 @@ public class CarregarView extends javax.swing.JFrame {
         catch( Exception e)
         {
             //this.setVisible(true);
+            e.printStackTrace();
             lbMsg.setText("Erro!");
             taAvisos.setText("Erro e = " + e.getMessage());
         }
@@ -235,7 +228,7 @@ public class CarregarView extends javax.swing.JFrame {
     private void btAbrirVideoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAbrirVideoActionPerformed
         // TODO add your handling code here:
                 // TODO add your handling code here:
-        lbMsg.setText("Abrindo imagem.....");
+        lbMsg.setText("Abrindo video..");
         this.setVisible(true);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("HUE","hue","arquivo hue");
         if (fcBuffer==null)
@@ -251,7 +244,7 @@ public class CarregarView extends javax.swing.JFrame {
             {
                 File file = fcBuffer.getSelectedFile();
                 VideoReader vr = new VideoReader(file);
-                int contador = 0;
+                
                 
                 Timer timer;
                 tempos[0] = System.nanoTime();
@@ -292,7 +285,7 @@ public class CarregarView extends javax.swing.JFrame {
                 timer.setRepeats(true);
                 timer.start();
                 
-                
+                //t1.run();
                 /*
                 JFrame frame = new JFrame();
                 imagemPanel imgP = new imagemPanel(file);
