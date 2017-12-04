@@ -186,6 +186,7 @@ public class VideoReader {
     }
 
     public boolean hasVideoEnded() {
+        //return (frameDeLeitura>=lastFrame);
         return (frameDeLeitura>=lastFrame);
     }
     

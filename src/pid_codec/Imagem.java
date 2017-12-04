@@ -225,6 +225,76 @@ public class Imagem {
         setPixels(img, bytesDeDiferenca);
     }
     
+    public void setPixelsIndividual(Imagem imageAnterior,int id,byte[] diff){
+            byte valor1 = diff[0];
+            byte valor2 = diff[1];
+            byte sinalBlue = (byte)((valor1 >> 7) & 1);
+            byte sinalGreen = (byte)((valor1 >> 6) & 1);
+            byte sinalRed = (byte)((valor1 >> 5) & 1);
+            
+            byte blue = (byte)0;
+            byte green = (byte)0;
+            byte red = (byte)0;
+            
+            byte[] imgB = new byte[3];
+            System.arraycopy(imageAnterior.getBytes(), id*3, imgB, 0, 3);
+            
+            int vBlue,vGreen,vRed;
+            
+            //((ID >> position) & 1);
+            
+            blue = (byte) (blue | (byte)(((valor1 >> 4) & 1) << 5));
+            blue = (byte) (blue | (byte)(((valor1 >> 3) & 1) << 4));
+            blue = (byte) (blue | (byte)(((valor1 >> 2) & 1) << 3));
+            blue = (byte) (blue | (byte)(((valor1 >> 1) & 1) << 2));
+            
+            green = (byte) (green | (byte)(((valor2 >> 7) & 1) << 5));
+            green = (byte) (green | (byte)(((valor2 >> 6) & 1) << 4));
+            green = (byte) (green | (byte)(((valor2 >> 5) & 1) << 3));
+            green = (byte) (green | (byte)(((valor2 >> 4) & 1) << 2));
+            
+            red = (byte) (red | (byte)(((valor2 >> 3) & 1) << 5));
+            red = (byte) (red | (byte)(((valor2 >> 2) & 1) << 4));
+            red = (byte) (red | (byte)(((valor2 >> 1) & 1) << 3));
+            red = (byte) (red | (byte)(((valor2) & 1) << 2));
+            
+            if ((blue&0xFF)!=0){
+                if ((sinalBlue&0xFF)!=0){//subtrair
+                    vBlue = -(blue&0xFF);
+                }else{
+                    vBlue = (blue&0xFF);
+                }
+                vBlue = vBlue + (imgB[0]&0xFF);
+                this.pixel[id*3] = (byte)vBlue;
+            }else{
+                this.pixel[id*3] = imgB[0];
+            }
+
+            if ((green&0xFF)!=0){
+                if ((sinalGreen&0xFF)!=0){
+                    vGreen = -(green&0xFF);
+                }else{
+                    vGreen = (green&0xFF);
+                }
+                vGreen = vGreen + (imgB[1]&0xFF);
+                this.pixel[id*3+1] = (byte)vGreen;
+            }else{
+                this.pixel[id*3+1] = imgB[1];
+            }
+            
+            if ((red&0xFF)!=0){
+                if ((sinalRed&0xFF)!=0){
+                    vRed = -(red&0xFF);
+                }else{
+                    vRed = (red&0xFF);
+                }
+                vRed = vRed + (imgB[2]&0xFF);
+                this.pixel[id*3+2] = (byte)vRed;
+            }else{
+                this.pixel[id*3+2] = imgB[2];
+            }
+    }
+    
     public void setPixels(Imagem img, byte[] bytesDeDiferenca){
         if ((img.getHeight()*img.getWidth())!=(bytesDeDiferenca.length/2) || (bytesDeDiferenca.length/2)!=(this.pixel.length/3)){
             throw new IllegalArgumentException("tamanhos incompativeis!");

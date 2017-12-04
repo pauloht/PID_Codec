@@ -59,6 +59,6 @@ public class testJFrameJpanel {
         
         int deslocamentoCores = 4 + (33+33%8)/8;
         System.out.println("des : " + deslocamentoCores);
-        System.out.println("mod : " + ((int)(33/8)));
+        System.out.println("mod : " + ((int)(15/8)));
     }
 }

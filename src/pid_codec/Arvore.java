@@ -7,6 +7,7 @@ package pid_codec;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -46,7 +47,7 @@ public class Arvore{
         arvoreBytes = representaoB;
     }
     
-    public static void setImagem(Imagem img,byte[] bytes){
+    public static void setImagem(Imagem imgAnterior,Imagem img,byte[] bytes){
         byte[] tamB = new byte[4];
         System.arraycopy(bytes,0,tamB,0,4);
         int tam = ByteBuffer.wrap(tamB).getInt();
@@ -55,10 +56,13 @@ public class Arvore{
         int quantasCores = ByteBuffer.wrap(tamB).getInt();
         int tamanhoBits = (tam-quantasCores)*2 + quantasCores;
         if (tamanhoBits%8==0){
-            deslocamentoCores = 8 + tamanhoBits/8 -1;
+            deslocamentoCores = 8 + tamanhoBits/8;
         }else{
-            deslocamentoCores = 8 + (int)(tamanhoBits/8);
+            deslocamentoCores = 8 + (int)(tamanhoBits/8 + 1);
         }
+        //System.out.println("tam : " + tam);
+        //System.out.println("tamanho bits : " + tamanhoBits);
+        //System.out.println("deslocamentoCores : " + deslocamentoCores);
         int contadorByte = 7;
         int count = 8;
         int contadorGlobal = 0;
@@ -72,6 +76,7 @@ public class Arvore{
         arvLocal.valores[2] = 0;
         arvLocal.valores[3] = 0;
         byteB = bytes[count];
+        List< Arvore > avLista = new ArrayList<>();
         int width1,width2,height1,height2;
         int idAux=0;
         while (contadorGlobal<tam){
@@ -109,8 +114,8 @@ public class Arvore{
                         height1 = (arvLocal.valores[1]+1)/2;
                         height2 = (arvLocal.valores[1]-1)/2;
                     }
-                    System.out.println("("+ arvLocal.id + ") Pai 4 , Para width,height,posX,posY = "+arvLocal.valores[0]+","+arvLocal.valores[1]+","+arvLocal.valores[2]+","+arvLocal.valores[3]+",visitados="+arvLocal.visitados);
-                    System.out.println("width1 : " + width1 + ",width2 : " + width2 + ",height1 : " + height1 + ",height2 : " + height2);
+                    //System.out.println("("+ arvLocal.id + ") Pai 4 , Para width,height,posX,posY = "+arvLocal.valores[0]+","+arvLocal.valores[1]+","+arvLocal.valores[2]+","+arvLocal.valores[3]+",visitados="+arvLocal.visitados);
+                    //System.out.println("width1 : " + width1 + ",width2 : " + width2 + ",height1 : " + height1 + ",height2 : " + height2);
                     arvLocal.filhos = new Arvore[4];
                     Arvore a1 = new Arvore(arvLocal);
                     a1.visitados = 0;
@@ -147,7 +152,7 @@ public class Arvore{
                     arvLocal.visitados = 1;
                     arvLocal = a1;
                 }else{ // 2 filhos
-                    System.out.println("("+ arvLocal.id + ") Pai 2 , Para width,height,posX,posY = "+arvLocal.valores[0]+","+arvLocal.valores[1]+","+arvLocal.valores[2]+","+arvLocal.valores[3]);
+                    //System.out.println("("+ arvLocal.id + ") Pai 2 , Para width,height,posX,posY = "+arvLocal.valores[0]+","+arvLocal.valores[1]+","+arvLocal.valores[2]+","+arvLocal.valores[3]);
                     if (arvLocal.valores[0]%2==0){ //par
                         width1 = arvLocal.valores[0]/2;
                         width2 = arvLocal.valores[0]/2;
@@ -192,19 +197,13 @@ public class Arvore{
                     arvLocal = a1;
                 }
             }else{ // cor
+                avLista.add(arvLocal);
                 byte[] b = new byte[2];
                 b[0] = bytes[deslocamentoCores+contadorCor*2+1];
                 b[1] = bytes[deslocamentoCores+contadorCor*2];
-                System.out.println("("+ arvLocal.id + ") Cor : " + Cor.getInterpretacaoCor(b) + ", Para width,height,posX,posY = "+arvLocal.valores[0]+","+arvLocal.valores[1]+","+arvLocal.valores[2]+","+arvLocal.valores[3]);
+                //System.out.println("("+ arvLocal.id + ") Cor : " + Cor.getInterpretacaoCor(b) + ", Para width,height,posX,posY = "+arvLocal.valores[0]+","+arvLocal.valores[1]+","+arvLocal.valores[2]+","+arvLocal.valores[3]);
                 //System.out.println("Para width,height,posX,posY = "+arvLocal.valores[0]+","+arvLocal.valores[1]+","+arvLocal.valores[2]+","+arvLocal.valores[3]);
                 int aux = 0;
-                for (int i=0;i<arvLocal.valores[1];i++){
-                    for (int j=0;j<arvLocal.valores[0];j++){
-                        aux = img.getWidth()*(i+arvLocal.valores[3])+(j+arvLocal.valores[2]);
-                        img.getBytes()[aux] = b[1];
-                        img.getBytes()[aux+1] = b[0];
-                    }
-                }
                 contadorCor++;
                 arvLocal.valor = b;
                 while (true){
@@ -243,7 +242,24 @@ public class Arvore{
             }
             contadorGlobal++;
         }
-        
+        int w,h,x,y,y2;
+        int id=0;
+        //System.out.println("comeca aki");
+        for (Arvore av : avLista){
+            w = av.valores[0];
+            h = av.valores[1];
+            x = av.valores[2];
+            y = av.valores[3];
+            //System.out.println(w + "," + h + "," + x + "," + y + ", cor = " + Cor.getInterpretacaoCor(av.valor));
+            if (av.valor[0]!=0||av.valor[1]!=0){
+                for (int i=0;i<h;i++){
+                    for (int j=0;j<w;j++){
+                        id = x + j + (y+i)*img.getWidth(); 
+                        img.setPixelsIndividual(imgAnterior, id, av.valor);
+                    }
+                }
+            }
+        }
     }
     
     public static String getSignificado(int width,int height,Arvore raiz){

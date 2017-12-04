@@ -23,6 +23,11 @@ public class Quadtree {
     private static byte[] corGlobal;
     
     public static Arvore arvoreFim(byte[] cor,Arvore[] arvVet){
+        if (arvoreBitCounter!=7){
+            //System.out.println("2 quando arvCounter : " + arvCounter + ", flush : " + String.format("%8s", Integer.toBinaryString(byteBuffer & 0xFF)).replace(' ', '0'));
+            arvore.add(byteBuffer);
+            //System.out.println("byteBufferValor : " + String.format("%8s", Integer.toBinaryString(byteBuffer & 0xFF)).replace(' ', '0'));
+        }
         Arvore ret = null;
         byte[] r2 = new byte[8+cores.size()+arvore.size()];
         ByteBuffer bbInt = ByteBuffer.allocate(4);
@@ -30,28 +35,29 @@ public class Quadtree {
         System.arraycopy(bbInt.array(), 0, r2, 0, 4);
         bbInt.rewind();
         bbInt.putInt((cores.size()/2));
-        System.out.println("cores.size="+cores.size()+",bbIntToInt : " + ByteBuffer.wrap(bbInt.array()).getInt());
+        //System.out.println("cores.size="+cores.size()+",bbIntToInt : " + ByteBuffer.wrap(bbInt.array()).getInt());
         System.arraycopy(bbInt.array(), 0, r2, 4, 4);
+        //System.out.println("arvore.size : " + arvore.size());
+        System.out.println("tam arvore : " + arvore.size());
+        System.out.println("tam cores : " + cores.size());
+        System.out.println("total : " + r2.length);
         for (int j=0;j<arvore.size();j++){
             r2[j+8] = arvore.get(j);
         }
         boolean par = false;
         for (int j=0;j<cores.size();j++){
-            byte[] tempByte = new byte[2];
             if (par){
-                tempByte[0] = cores.get(j-1);
-                tempByte[1] = cores.get(j);
-                //System.out.println("cor OK : " + Cor.getInterpretacaoCor(tempByte));
                 par = false;
             }else{
                 par = true;
             }
             r2[j+8+arvore.size()] = cores.get(j);
         }
-        if (arvoreBitCounter!=7){
-            //System.out.println("2 quando arvCounter : " + arvCounter + ", flush : " + String.format("%8s", Integer.toBinaryString(byteBuffer & 0xFF)).replace(' ', '0'));
-            arvore.add(byteBuffer);
+        /*
+        for (int i=0;i<r2.length;i++){
+            System.out.println("byte : " + i + " = "+ String.format("%8s", Integer.toBinaryString(r2[i] & 0xFF)).replace(' ', '0'));
         }
+        */
         if (cor!=null){
             ret = new Arvore(corGlobal,r2);
         }else{
@@ -157,7 +163,7 @@ public class Quadtree {
             
             //em mem b1b2b1b2b1b2...b1b2b3b4b3b4b3b4...b3b4.
             if (height2!=0 && width2!=0){
-                //System.out.println("branching, arvBitCounter : " + arvoreBitCounter + ",arvCounter : " + arvCounter + ",size :"+(height*width));
+                //System.out.println("branching 4, arvBitCounter : " + arvoreBitCounter + ",arvCounter : " + arvCounter + ",size :"+(height*width));
                 if (arvoreBitCounter==0){
                     //System.out.println("3 quando arvCounter : " + arvCounter + ", flush : " + String.format("%8s", Integer.toBinaryString(byteBuffer & 0xFF)).replace(' ', '0'));
                     arvore.add(byteBuffer);
@@ -224,7 +230,7 @@ public class Quadtree {
                     ret = new Arvore(arvVet,null);
                 }
             }else{
-                //System.out.println("branching2, arvBitCounter : " + arvoreBitCounter + ",arvCounter : " + arvCounter + ",size :"+(height*width));
+                //System.out.println("branching 2, arvBitCounter : " + arvoreBitCounter + ",arvCounter : " + arvCounter + ",size :"+(height*width));
                 if (arvoreBitCounter==0){
                     //System.out.println("6 quando arvCounter : " + arvCounter + ", flush : " + String.format("%8s", Integer.toBinaryString(byteBuffer & 0xFF)).replace(' ', '0'));
                     arvore.add(byteBuffer);
