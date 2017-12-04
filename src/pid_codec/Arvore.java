@@ -145,10 +145,6 @@ public class Arvore{
                     a4.valores[3] = arvLocal.valores[3]+height1;
                     arvLocal.filhos[3] = a4;
                     arvLocal.visitados = 1;
-                    System.out.println(arvLocal.id + " visitados after : " + arvLocal.visitados);
-                    for (int i=0;i<4;i++){
-                        System.out.println("("+ arvLocal.id + ") Filho : "+i+": , Para width,height,posX,posY = "+arvLocal.filhos[i].valores[0]+","+arvLocal.filhos[i].valores[1]+","+arvLocal.filhos[i].valores[2]+","+arvLocal.filhos[i].valores[3]);
-                    }
                     arvLocal = a1;
                 }else{ // 2 filhos
                     System.out.println("("+ arvLocal.id + ") Pai 2 , Para width,height,posX,posY = "+arvLocal.valores[0]+","+arvLocal.valores[1]+","+arvLocal.valores[2]+","+arvLocal.valores[3]);
@@ -192,9 +188,6 @@ public class Arvore{
                     arvLocal.filhos[1] = a2;
                     arvLocal.filhos[2] = null;
                     arvLocal.filhos[3] = null;
-                    for (int i=0;i<2;i++){
-                        System.out.println("("+ arvLocal.id + ")Filho : "+i+": , Para width,height,posX,posY = "+arvLocal.filhos[i].valores[0]+","+arvLocal.filhos[i].valores[1]+","+arvLocal.filhos[i].valores[2]+","+arvLocal.filhos[i].valores[3]);
-                    }
                     arvLocal.visitados = 1;
                     arvLocal = a1;
                 }
@@ -202,7 +195,7 @@ public class Arvore{
                 byte[] b = new byte[2];
                 b[0] = bytes[deslocamentoCores+contadorCor*2+1];
                 b[1] = bytes[deslocamentoCores+contadorCor*2];
-                System.out.println("("+ arvLocal.id + ") Cor : " + Cor.getInterpretacaoCor(b));
+                System.out.println("("+ arvLocal.id + ") Cor : " + Cor.getInterpretacaoCor(b) + ", Para width,height,posX,posY = "+arvLocal.valores[0]+","+arvLocal.valores[1]+","+arvLocal.valores[2]+","+arvLocal.valores[3]);
                 //System.out.println("Para width,height,posX,posY = "+arvLocal.valores[0]+","+arvLocal.valores[1]+","+arvLocal.valores[2]+","+arvLocal.valores[3]);
                 int aux = 0;
                 for (int i=0;i<arvLocal.valores[1];i++){
