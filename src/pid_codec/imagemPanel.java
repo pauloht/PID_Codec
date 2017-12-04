@@ -26,12 +26,13 @@ public class imagemPanel extends javax.swing.JPanel {
     public imagemPanel(Imagem imagem){
         initComponents();
         if (imagem!=null){
-            changeImage(imagem);
+            changeImage(imagem,-1);
         }
     }
     
-    public void changeImage(Imagem img){
+    public void changeImage(Imagem img,int codigo){
             PTimer inicio = new PTimer("changeImage tempo");
+            //System.out.println(img.testPrint());
             inicio.startTimer();
             try{
                 byte[] pixels = img.getBytes();
@@ -59,7 +60,7 @@ public class imagemPanel extends javax.swing.JPanel {
                 e.printStackTrace();
             }finally{
                 inicio.endTimer();
-                System.out.println(img.testPrint());
+                //System.out.println(img.testPrint());
                 //System.out.println(inicio);
             }
     }

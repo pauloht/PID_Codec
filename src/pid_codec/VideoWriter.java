@@ -27,7 +27,7 @@ public class VideoWriter {
             System.out.println("write start");
             out = new FileOutputStream(nameOut);
             File fileImagemInicial = new File((diretorio.getPath()+"//"+baseNome+util.retornarStringPorNumero(0)+extensao));
-            Imagem imagemInicial = new Imagem(fileImagemInicial,false);
+            Imagem imagemInicial = new Imagem(fileImagemInicial,true);
             int width = imagemInicial.getWidth();
             int height = imagemInicial.getHeight();
             
@@ -44,24 +44,38 @@ public class VideoWriter {
             System.arraycopy(heightBytes, 0, cabecalho, 8, 4);
             out.write(cabecalho);
             out.write(imagemInicial.getBytes());
-            System.out.println(imagemInicial.testPrint());
-            Imagem imagemBuffer = null;
+            //System.out.println(imagemInicial.testPrint());
+            Imagem imagemBuffer = new Imagem(imagemInicial);
             ptstart.endTimer();
+            final Imagem tempImagemBuffer;
             byte[] aux;
             System.out.println(ptstart);
             for (int i=1;i<=ultimoID;i++){
                 PTimer ptloop= new PTimer("frame "+Integer.toString(i));
                 ptloop.startTimer();
                 File file = new File( (diretorio.getPath()+"//"+baseNome+util.retornarStringPorNumero(i)+extensao) );
-                //Imagem img = new Imagem(file);
-                //out.write(img.getBytes());
-                imagemBuffer = new Imagem(imagemInicial);
+                tempImagemBuffer = new Imagem(imagemInicial);
                 imagemInicial.setImagem(file,false);
                 aux = Imagem.diffImagem(imagemBuffer, imagemInicial);
-                System.out.println(imagemInicial.testPrint());
-                System.out.println("dif : " + Imagem.getInterpretacaoDiferanca(aux));
+                //System.out.println("calculando qt : ");
+                //String qt = Quadtree.getSignificado(imagemBuffer, aux);
+                //System.out.println("fim qt");
+                imagemInicial.setPixels(imagemBuffer, aux);
+                System.out.println("novaImagem : \n" + imagemInicial.testPrint());
+                imagemBuffer = new Imagem(imagemInicial);
                 out.write(aux);
+                
+                
+                //System.out.println("dif : " + Imagem.getInterpretacaoDiferanca(aux) + "depois : " + imagemInicial.testPrint() + "\n");
+                //System.out.println("qt : \n"+qt);
+                //System.out.println("fim qt");
+                System.out.println("qt2 : \n");
+                byte[] test = Quadtree.getQuadBytes(width, height, aux);
+                System.out.println("fim qt2");
+                Arvore.setImagem(tempImagemBuffer, test);
+                System.out.println("after arvore transomation + \n" + tempImagemBuffer.testPrint());
                 ptloop.endTimer();
+                break;
                 //System.out.println(ptloop);
             }
             t2.endTimer();

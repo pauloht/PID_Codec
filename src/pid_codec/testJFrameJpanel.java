@@ -28,7 +28,7 @@ public class testJFrameJpanel {
         return (byte)((ID >> position) & 1);
     }
     
-    public static void main(String args[]){
+    public static void test(String args[]){
         byte a = 0;
         
         a = (byte) (a | (1 << 6));
@@ -47,5 +47,18 @@ public class testJFrameJpanel {
         String t = Byte.toString(a);
         String s1 = String.format("%8s", Integer.toBinaryString(a & 0xFF)).replace(' ', '0');
         System.out.println(s1);
+    }
+    
+    public static void main(String args[]){
+        byte a = 0;
+        a = (byte) (a | (1 << 2));
+        a = (byte) (a | (1 << 3));
+        a = (byte) (a | (0 << 4));
+        a = (byte) (a | (1 << 5));
+        System.out.println((a&0xFF));
+        
+        int deslocamentoCores = 4 + (33+33%8)/8;
+        System.out.println("des : " + deslocamentoCores);
+        System.out.println("mod : " + ((int)(33/8)));
     }
 }

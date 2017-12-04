@@ -75,7 +75,7 @@ public class VideoReader {
                 file.read(intArray);
                 height = ByteBuffer.wrap(intArray).getInt(); 
                 bytesArrayInicial = new byte[(width*height)*3];
-                bytesArrayDiff = new byte[(width*height)*4];
+                bytesArrayDiff = new byte[(width*height)*2];
                 System.out.println("lastFrame : " + lastFrame + ",width : " + width + ",height : " + height);
             } catch (IOException ex) {
                 Logger.getLogger(VideoReader.class.getName()).log(Level.SEVERE, null, ex);
@@ -117,6 +117,7 @@ public class VideoReader {
                 //System.out.println("percentage procc : " + pProc);
                 
                 //
+                //System.out.println("nova imagem : " + this.img.testPrint());
                 return(this.img);
             } catch (IOException ex) {
                 Logger.getLogger(VideoReader.class.getName()).log(Level.SEVERE, null, ex);
@@ -168,7 +169,8 @@ public class VideoReader {
             if (flagBuffer[posLendo]==true){
                 frameDeLeitura++;
                 Imagem imgLocal = bufferDeImages[posLendo];
-                imgP.changeImage(imgLocal);
+                //System.out.println(imgLocal.testPrint());
+                imgP.changeImage(imgLocal,posLendo);
                 flagBuffer[posLendo] = false;
                 if (posLendo==9){
                     posLendo = 0;
